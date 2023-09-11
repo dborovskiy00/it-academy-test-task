@@ -65,26 +65,26 @@
             const json = parseJSON(text);
 
             if (json && Array.isArray(json)) {
-            let t1 = '';
+                let t1 = '';
 
-            for (let i = 0; i < json.length; i++) {
-                t1 += await loadFileTextUsingAsyncAwait(json[i]);
+                for (let i = 0; i < json.length; i++) {
+                    t1 += await loadFileTextUsingAsyncAwait(json[i]);
+                }
+
+                return t1;
             }
 
-            return t1;
-          }
-
-          return text ? text + ' ' : '';
+            return text ? text + ' ' : '';
         }
     </script>
 
     <script>
         document.getElementById('variant1').addEventListener('click', function() {
-          loadResultTextUsingThen('root.txt').then(alert);
+            loadResultTextUsingThen('root.txt').then(alert);
         });
 
         document.getElementById('variant2').addEventListener('click', async () => {
-          alert(await loadFileTextUsingAsyncAwait('root.txt'));
+            alert(await loadFileTextUsingAsyncAwait('root.txt'));
         });
     </script>
 </body>
