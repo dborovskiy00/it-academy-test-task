@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <button id="variant1">Variant 1</button>
+    <button id="variant2">Variant 2</button>
+
+    <script>
+        function parseJSON(string) {
+            try {
+                return JSON.parse(string);
+            } catch {
+                return null;
+            }
+        }
+
+        function loadFile(fileName) {
+            const BASE_URL = 'https://fe.it-academy.by/Examples/words_tree';
+
+            return fetch(`${BASE_URL}/${fileName}`);
+        }
+    </script>
+
+    <script>
+        function loadResultTextUsingThen(fileName, prevText = '') {
+            return loadFile(fileName)
+                .then((fileContent) => (
+                    fileContent.text()
+                        .then((fileText) => {
+                            const json = parseJSON(fileText);
+
+                            if (json && Array.isArray(json)) {
+                                let promise = Promise.resolve(prevText);
+
+                                for (let i = 0; i < json.length; i++) {
+                                    promise = promise
+                                        .then((prevValue) => loadResultTextUsingThen(json[i], prevValue))
+                                }
+
+                                return promise;
+                            }
+
+                            return prevText + (fileText || '') + ' ';
+                        })
+                )).catch(() => prevText)
+        }
+    </script>
+
+    <script>
+        const loadFileTextUsingAsyncAwait = async (fileName) => {
+            let result;
+
+            try {
+                result = await loadFile(fileName);
+            } catch {
+                return '';
+            }
+
+            const text = (await result.text()).trim();
+            const json = parseJSON(text);
+
+            if (json && Array.isArray(json)) {
+            let t1 = '';
+
+            for (let i = 0; i < json.length; i++) {
+                t1 += await loadFileTextUsingAsyncAwait(json[i]);
+            }
+
+            return t1;
+          }
+
+          return text ? text + ' ' : '';
+        }
+    </script>
+
+    <script>
+        document.getElementById('variant1').addEventListener('click', function() {
+          loadResultTextUsingThen('root.txt').then(alert);
+        });
+
+        document.getElementById('variant2').addEventListener('click', async () => {
+          alert(await loadFileTextUsingAsyncAwait('root.txt'));
+        });
+    </script>
+</body>
+</html>
