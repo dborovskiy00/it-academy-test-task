@@ -27,9 +27,9 @@
     <script>
         function loadResultTextUsingThen(fileName, prevText = '') {
             return loadFile(fileName)
-                .then((fileContent) => (
-                    fileContent.text()
-                        .then((fileText) => {
+                .then(function (fileContent) {
+                    return fileContent.text()
+                        .then(function (fileText) {
                             const json = parseJSON(fileText);
 
                             if (json && Array.isArray(json)) {
@@ -37,15 +37,17 @@
 
                                 for (let i = 0; i < json.length; i++) {
                                     promise = promise
-                                        .then((prevValue) => loadResultTextUsingThen(json[i], prevValue))
+                                        .then(function (prevValue) {
+                                            return loadResultTextUsingThen(json[i], prevValue);
+                                        });
                                 }
 
                                 return promise;
                             }
 
                             return prevText + (fileText || '') + ' ';
-                        })
-                )).catch(() => prevText)
+                        });
+                }).catch(() => prevText);
         }
     </script>
 
